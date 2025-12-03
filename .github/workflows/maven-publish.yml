@@ -1,21 +1,23 @@
-name: Build and Deploy ruoyiCommon
+name: Build and Deploy testcommom
 
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: read
   packages: write
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ 获取仓库源码
+      # 1️⃣ Checkout 仓库源码
       - uses: actions/checkout@v3
 
-      # 2️⃣ 设置 JDK
+      # 2️⃣ 设置 JDK 并缓存 Maven
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -23,13 +25,24 @@ jobs:
           java-version: 17
           cache: maven
 
+      # 3️⃣ 配置 Maven settings.xml
+      - name: Configure Maven settings
+        run: |
+          mkdir -p $HOME/.m2
+          echo "<settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.OKTOKEN }}</password>
+              </server>
+            </servers>
+            </settings>" > $HOME/.m2/settings.xml
+
       # 4️⃣ 构建 JAR
       - name: Build JAR
-        run: mvn clean package -DskipTests -Drevision=${{ env.VERSION }}
+        run: mvn clean package -DskipTests
 
-      # 5️⃣ 上传 JAR 到 GitHub Packages
-      - name: Deploy JAR to GitHub Packages
-        run: mvn deploy
-        env:
-          GITHUB_ACTOR: jackwjf
-          GITHUB_TOKEN: ${{ secrets.OKTOKEN }}
+      # 5️⃣ 上传到 GitHub Packages
+      - name: Deploy to GitHub Packages
+        run: mvn deploy -DskipTests
