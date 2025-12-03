@@ -16,7 +16,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/jackwjf/ruoyiCommon</url>
+            <url>https://maven.pkg.github.com/jackwjf/testcommom</url>
         </repository>
     </distributionManagement>
 
