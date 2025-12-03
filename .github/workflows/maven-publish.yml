@@ -33,7 +33,7 @@ jobs:
             <servers>
               <server>
                 <id>github</id>
-                <username>${{ github.actor }}</username>
+                <username>jackwjf</username>
                 <password>${{ secrets.OKTOKEN }}</password>
               </server>
             </servers>
