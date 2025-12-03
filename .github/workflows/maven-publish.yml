@@ -1,0 +1,35 @@
+name: Build and Deploy ruoyiCommon
+
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ 获取仓库源码
+      - uses: actions/checkout@v3
+
+      # 2️⃣ 设置 JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # 4️⃣ 构建 JAR
+      - name: Build JAR
+        run: mvn clean package -DskipTests -Drevision=${{ env.VERSION }}
+
+      # 5️⃣ 上传 JAR 到 GitHub Packages
+      - name: Deploy JAR to GitHub Packages
+        run: mvn deploy
+        env:
+          GITHUB_ACTOR: jackwjf
+          GITHUB_TOKEN: ${{ secrets.OKTOKEN }}
